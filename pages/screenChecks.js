@@ -7,7 +7,7 @@ async function checkPageTitle(driver, title) {
 }
 
 async function checkFilterButton(driver) {
-    await driver.wait(until.elementIsVisible(driver.findElement(By.className('filter-toggle')), timeout));
+    await driver.wait(until.elementIsEnabled(driver.findElement(By.className('filter-toggle')), timeout));
 }
 
 module.exports = {

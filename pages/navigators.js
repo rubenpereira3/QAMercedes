@@ -25,7 +25,7 @@ async function pressPrivateRadioButton(driver) {
 }
 
 async function pressModalCloseButton(driver) {
-    await driver.findElement(By.css('[data-test-id="state-selected-modal__close"')).click();
+    await driver.wait(until.elementIsEnabled(driver.findElement(By.css('[data-test-id="state-selected-modal__close"'))), timeout).click();
 }
 
 async function pressFilterButton(driver) {
@@ -36,6 +36,23 @@ async function clickPreOwnTab(driver) {
     await driver.findElement(By.xpath('/html/body/div[1]/div[1]/main/div[2]/div[1]/div[2]/div[1]/div/div/div[1]/wb-tabs/wb-tab-bar/wb-tab[1]')).click();
 }
 
+async function clickOnColorFilter(driver) {
+    await driver.findElement(By.xpath('/html/body/div[1]/div[1]/main/div[2]/div[1]/div[2]/div[1]/div/div/div[1]/div[5]/div[7]/div')).click();
+}
+
+async function selectColorOption(driver) {
+    const colorSelectLocator = '/html/body/div[1]/div[1]/main/div[2]/div[1]/div[2]/div[1]/div/div/div[1]/div[5]/div[7]/div/div[2]/div/div/a';
+    const colorValueLocator = '/html/body/div[1]/div[1]/main/div[2]/div[1]/div[2]/div[1]/div/div/div[1]/div[5]/div[7]/div/div[2]/div/div/ul/li[2]/a';
+    
+    await driver.findElement(By.xpath(colorSelectLocator)).click();
+    await driver.wait(until.elementIsVisible(driver.findElement(By.xpath(colorValueLocator))), 10000).click();
+}
+
+async function closeFilterModal(driver) {
+    const closeBtnLocator = '//*[@id="app"]/div[1]/main/div[2]/div[1]/div[2]/div[1]/span/span';
+    await driver.findElement(By.xpath(closeBtnLocator)).click();
+}
+
 module.exports = {
     pressAcceptAllCookiesButton,
     selectStateOption,
@@ -43,5 +60,8 @@ module.exports = {
     pressPrivateRadioButton,
     pressModalCloseButton,
     pressFilterButton,
-    clickPreOwnTab
+    clickPreOwnTab,
+    clickOnColorFilter,
+    selectColorOption,
+    closeFilterModal
 };

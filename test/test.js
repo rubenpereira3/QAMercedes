@@ -24,23 +24,39 @@ describe('Array', async function () {
 
    });
    
-    it('Fill info', async function() {
+    it('Fill location info', async function() {
         await navigators.selectStateOption(driver, 'New South Wales');
         await new Promise(resolve => setTimeout(resolve, 1000));
         await navigators.insertPostalCode(driver, '2007');
         await new Promise(resolve => setTimeout(resolve, 1000));
         await navigators.pressPrivateRadioButton(driver);
-        await new Promise(resolve => setTimeout(resolve, 1000));
         await navigators.pressModalCloseButton(driver);
+        await new Promise(resolve => setTimeout(resolve, 7000));
     });
 
     it('Click the filter button', async function() {
-        await screenChecks.checkFilterButton(driver);
-        /*await navigators.pressFilterButton(driver);*/
+        await navigators.pressFilterButton(driver);
         await new Promise(resolve => setTimeout(resolve, 5000));
+    });
+
+    it('Select a color from Pre-Owned tab', async function() {
         await navigators.clickPreOwnTab(driver);
+        await new Promise(resolve => setTimeout(resolve, 12000));
+        
+        await navigators.pressFilterButton(driver);
+        await new Promise(resolve => setTimeout(resolve, 10000));
+        
+        await navigators.clickOnColorFilter(driver);
+        await new Promise(resolve => setTimeout(resolve, 1000));
+
+        await navigators.selectColorOption(driver);
+        await navigators.closeFilterModal(driver);
 
         await new Promise(resolve => setTimeout(resolve, 10000));
+    });
+
+    it('Navigate to the Vehicle Details of the most expensive car', async function() {
+
     });
 
     after(async function() {

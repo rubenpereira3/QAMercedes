@@ -6,25 +6,32 @@ async function checkPageTitle(driver, title) {
     await driver.wait(until.titleIs(title), timeout);
 }
 
-async function checkFilterButton(driver) {
-    await driver.wait(until.elementIsEnabled(driver.findElement(By.className('filter-toggle')), timeout));
-}
-
 async function getModelYear(driver) {
-    const locator = '/html/body/div/div[1]/main/div/div[1]/div[4]/div/div/div/div/div/ul/li[2]/span[2]';
-    const x = await driver.wait(until.elementIsVisible(driver.findElement(By.xpath(locator))), timeout  * 4).getText();
-    console.log('Model Year: ' + x);
+    const locator = '//li[@data-test-id="dcp-vehicle-details-list-item-2"]/span[2]';
+    
+    await new Promise(resolve => setTimeout(resolve, 4000));
+    
+    const modelYear = await driver.findElement(By.xpath(locator)).getText();
+    return modelYear;
 }
 
 async function getVin(driver) {
-    const locator = '/html/body/div/div[1]/main/div/div[1]/div[4]/div/div/div/div/div/ul/li[11]/span[2]';
-    const x = await driver.wait(until.elementIsVisible(driver.findElement(By.xpath(locator))), timeout  * 4).getText();
-    console.log('VIN: ' + x);
+    const locator = '//li[@data-test-id="dcp-vehicle-details-list-item-10"]/span[2]';
+
+    const vin = await driver.findElement(By.xpath(locator)).getText();
+    return vin;
+}
+
+async function getErrorMessage(driver) {
+    const locator = '/html/body/div/div[1]/main/div/div[1]/div[7]/div/div[1]/div/div[2]/div/div/div/div/div[3]/p';
+    
+    const error = await driver.findElement(By.xpath(locator)).getText();
+    return error;
 }
 
 module.exports = {
     checkPageTitle,
-    checkFilterButton,
     getModelYear,
-    getVin
+    getVin,
+    getErrorMessage
 };

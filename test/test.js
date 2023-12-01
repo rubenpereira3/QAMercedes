@@ -1,4 +1,4 @@
-const { Builder } = require("selenium-webdriver");
+const { Builder, Browser } = require("selenium-webdriver");
 const navigators = require("../pages/navigators");
 const screenChecks = require("../pages/screenChecks");
 const chai = require("chai");
@@ -11,7 +11,10 @@ describe('Validate the negative path of enquiring the highest price at Mercedes-
     let driver;
 
     before(async function() {
-        driver = await new Builder().forBrowser('chrome').build();
+        const useEdge = process.argv.includes('--edge');
+        const browser = useEdge ? Browser.EDGE : Browser.CHROME;
+
+        driver = await new Builder().forBrowser(browser).build();
     });
     
     it('Open the Mercedes-Benz shop', async function() {
@@ -39,7 +42,7 @@ describe('Validate the negative path of enquiring the highest price at Mercedes-
         
         await navigators.clickOnColorFilter(driver);
         await navigators.selectColorOption(driver);
-        
+
         await navigators.closeFilterModal(driver);
     });
     

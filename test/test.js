@@ -51,13 +51,27 @@ describe('Array', async function () {
 
         await navigators.selectColorOption(driver);
         await navigators.closeFilterModal(driver);
-
-        await new Promise(resolve => setTimeout(resolve, 10000));
     });
-
+    
     it('Navigate to the Vehicle Details of the most expensive car', async function() {
-
+        await navigators.selectFilterOption(driver, 'price-desc-ucos');
+        await navigators.clickOnFirstResult(driver);
     });
+
+    it('Save car details to a file', async function() {
+        await driver.manage().setTimeouts({ implicit: 3000 });
+        await screenChecks.getModelYear(driver);
+        await screenChecks.getVin(driver);
+    });
+    
+    it('Click on Enquire Now button', async function() {
+        await navigators.clickOnEnquireNow(driver);
+    });
+    
+    it('Fill contact details with wrong email', async function() {
+        await navigators.insertEmail(driver, 'a.com');
+        await new Promise(resolve => setTimeout(resolve, 20000));
+    })
 
     after(async function() {
         await driver.quit();

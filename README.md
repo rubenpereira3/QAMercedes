@@ -9,7 +9,7 @@
 
 ### How to install
 1. Clone the repository
-2. Navigate to root directory of project
+2. Navigate to TASK_2 directory
 3. Run npm install 
 
 ---

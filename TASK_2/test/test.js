@@ -3,8 +3,9 @@ const navigators = require("../pages/navigators");
 const screenChecks = require("../pages/screenChecks");
 const chai = require("chai");
 const fileOperations = require("../fileOperations");
+const { parseHttpResponse } = require("selenium-webdriver/http");
 
-describe('Validate the negative path of enquiring the highest price at Mercedes-Benz', function () {
+describe('Validate the negative path of enquiring the highest price at Mercedes-Benz', function () {   
     const timeoutInMinutes = 30;
     this.timeout(timeoutInMinutes * 60000);
     

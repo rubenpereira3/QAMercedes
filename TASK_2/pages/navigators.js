@@ -22,18 +22,17 @@ async function selectStateOption(driver, value) {
 }
 
 async function insertLocationPostalCode(driver, postalCode) {
-    const locator = '/html/body/div[1]/div[1]/header/div/div[4]/div[1]/div/div[1]/div/wb-input-control/wb-input/input';
+    const locator = '[aria-labelledby="postal-code-hint"]';
+    //await new Promise(resolve => setTimeout(resolve, 500));
 
-    await new Promise(resolve => setTimeout(resolve, 500));
-
-    await driver.findElement(By.xpath(locator)).sendKeys(postalCode);
+    await driver.findElement(By.css(locator)).sendKeys(postalCode);
 }
 
 async function pressPrivateRadioButton(driver) {
     const locator = '/html/body/div[1]/div[1]/header/div/div[4]/div[1]/div/div[1]/div/div/div/wb-radio-control[1]';
     await driver.findElement(By.xpath(locator)).click();
 
-    await new Promise(resolve => setTimeout(resolve, 2000));
+    //await new Promise(resolve => setTimeout(resolve, 2000));
 }
 
 async function pressModalCloseButton(driver) {
@@ -65,12 +64,13 @@ async function clickOnColorFilter(driver) {
 }
 
 async function selectColorOption(driver) {
-    const colorSelectLocator = '/html/body/div[1]/div[1]/main/div[2]/div[1]/div[2]/div[1]/div/div/div[1]/div[5]/div[7]/div/div[2]/div/div/a';
+    const colorSelectLocator = '[data-test-id="multi-select-dropdown-card-opener"';
     const colorValueLocator = '/html/body/div[1]/div[1]/main/div[2]/div[1]/div[2]/div[1]/div/div/div[1]/div[5]/div[7]/div/div[2]/div/div/ul/li[2]/a';
     
     await new Promise(resolve => setTimeout(resolve, 1000));
     
-    await driver.findElement(By.xpath(colorSelectLocator)).click();
+    const x = await driver.findElements(By.css(colorSelectLocator));
+    await x[1].click();
     await driver.findElement(By.xpath(colorValueLocator)).click();
 }
 

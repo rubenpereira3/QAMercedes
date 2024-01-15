@@ -1,156 +1,157 @@
-const { By, Select } = require("selenium-webdriver");
+const { By, Select, until } = require("selenium-webdriver");
 
-async function pressAcceptAllCookiesButton(driver) {
-    const shadowLocator = '[settings-id="Kvbnw4-6_"]';
-    const buttonLocator = '[data-test="handle-accept-all-button"]';
+class Navigators {
+    constructor(driver) {
+        this.driver = driver;
+    }
 
-    await new Promise(resolve => setTimeout(resolve, 5000));
+    async pressAcceptAllCookiesButton() {
+        const shadowLocator = '//*[@settings-id="Kvbnw4-6_"]';
+        const buttonLocator = '[data-test="handle-accept-all-button"]';
     
-    const cookieBanner = await driver.findElement(By.css(shadowLocator));
-    const shadowRoot = await cookieBanner.getShadowRoot();
-
-    const acceptButton = await shadowRoot.findElement(By.css(buttonLocator));
-    await acceptButton.click();
-}
-
-async function selectStateOption(driver, value) {
-    const locator = '/html/body/div[1]/div[1]/header/div/div[4]/div[1]/div/div[1]/div/wb-select-control/wb-select/select';
-
-    const selectElement = await driver.findElement(By.xpath(locator));
-    const select = new Select(selectElement);
-    await select.selectByVisibleText(value);
-}
-
-async function insertLocationPostalCode(driver, postalCode) {
-    const locator = '[aria-labelledby="postal-code-hint"]';
-    //await new Promise(resolve => setTimeout(resolve, 500));
-
-    await driver.findElement(By.css(locator)).sendKeys(postalCode);
-}
-
-async function pressPrivateRadioButton(driver) {
-    const locator = '/html/body/div[1]/div[1]/header/div/div[4]/div[1]/div/div[1]/div/div/div/wb-radio-control[1]';
-    await driver.findElement(By.xpath(locator)).click();
-
-    //await new Promise(resolve => setTimeout(resolve, 2000));
-}
-
-async function pressModalCloseButton(driver) {
-    const locator = '[data-test-id="state-selected-modal__close"';
-    await driver.findElement(By.css(locator)).click();
-}
-
-async function pressFilterButton(driver) {
-    const locator = 'filter-toggle';
-
-    await new Promise(resolve => setTimeout(resolve, 5000));
+        await new Promise(resolve => setTimeout(resolve, 5000));
+        
+        const cookieBanner = await this.driver.wait(until.elementLocated(By.xpath(shadowLocator)), 10000);
+        const shadowRoot = await cookieBanner.getShadowRoot();
+        
+        const acceptButton = await shadowRoot.findElement(By.css(buttonLocator));
+        await acceptButton.click();
+    }
     
-    await driver.findElement(By.className(locator)).click();
-}
-
-async function clickPreOwnTab(driver) {
-    const locator = '/html/body/div[1]/div[1]/main/div[2]/div[1]/div[2]/div[1]/div/div/div[1]/wb-tabs/wb-tab-bar/wb-tab[1]';
-
-    await new Promise(resolve => setTimeout(resolve, 5000));
+    async selectStateOption(value) {
+        const locator = '/html/body/div[1]/div[1]/header/div/div[4]/div[1]/div/div[1]/div/wb-select-control/wb-select/select';
     
-    await driver.findElement(By.xpath(locator)).click();
+        const selectElement = await this.driver.findElement(By.xpath(locator));
+        const select = new Select(selectElement);
+        await select.selectByVisibleText(value);
+    }
     
-    await new Promise(resolve => setTimeout(resolve, 12000));
-}
+    async insertLocationPostalCode(postalCode) {
+        const locator = '//*[@aria-labelledby="postal-code-hint"]';
 
-async function clickOnColorFilter(driver) {
-    const locator = '/html/body/div[1]/div[1]/main/div[2]/div[1]/div[2]/div[1]/div/div/div[1]/div[5]/div[7]/div';
-    await driver.findElement(By.xpath(locator)).click();
-}
-
-async function selectColorOption(driver) {
-    const colorSelectLocator = '[data-test-id="multi-select-dropdown-card-opener"';
-    const colorValueLocator = '/html/body/div[1]/div[1]/main/div[2]/div[1]/div[2]/div[1]/div/div/div[1]/div[5]/div[7]/div/div[2]/div/div/ul/li[2]/a';
+        for (let i = 0; i < postalCode.length; i++)
+            await this.driver.findElement(By.xpath(locator)).sendKeys(postalCode[i]);
+    }
     
-    await new Promise(resolve => setTimeout(resolve, 1000));
+    async pressPrivateRadioButton() {
+        const locator = '/html/body/div[1]/div[1]/header/div/div[4]/div[1]/div/div[1]/div/div/div/wb-radio-control[1]';
+        await this.driver.findElement(By.xpath(locator)).click();
+    }
     
-    const x = await driver.findElements(By.css(colorSelectLocator));
-    await x[1].click();
-    await driver.findElement(By.xpath(colorValueLocator)).click();
-}
-
-async function closeFilterModal(driver) {
-    const locator = '//*[@id="app"]/div[1]/main/div[2]/div[1]/div[2]/div[1]/span/span';
-    await driver.findElement(By.xpath(locator)).click();
-}
-
-async function selectFilterOption(driver, value) {
-    const locator = '/html/body/div/div[1]/main/div[2]/div[1]/div[2]/div[2]/div[2]/wb-select-control/wb-select/select';
+    async pressModalCloseButton() {
+        const locator = '//*[@data-test-id="state-selected-modal__close"]';
     
-    const selectElement = await driver.findElement(By.xpath(locator));
-    const select = new Select(selectElement);
-
-    await select.selectByValue(value);
-}
-
-async function clickOnFirstResult(driver, value) {
-    const locator = 'dcp-cars-srp-results__tile';
-    await driver.findElement(By.className(locator)).click();
-}
-
-async function clickOnEnquireNow(driver) {
-    const locator = '[data-test-id="dcp-buy-box__contact-seller"]';
-    await driver.findElement(By.css(locator)).click();
-}
-
-async function insertFirstName(driver, firstName) {
-    const locator = '//div[@data-test-id="rfq-contact__first-name"]//input';
+        const button = await this.driver.wait(until.elementIsEnabled(this.driver.findElement(By.xpath(locator))), 10000);
+        await button.click();
+    }
     
-    await new Promise(resolve => setTimeout(resolve, 5000));
+    async pressFilterButton() {
+        const locator = '//div/*[@class="filter-toggle"]';
+        
+        const button = await this.driver.wait(until.elementIsEnabled(this.driver.findElement(By.xpath(locator))), 12000);
+        await button.click();
+    }
     
-    await driver.findElement(By.xpath(locator)).sendKeys(firstName);
+    async clickPreOwnTab() {
+        const locator = '//button[./span[contains(text(), "Pre-Owned")]]';
+        
+        await this.driver.wait(until.elementIsVisible(this.driver.findElement(By.xpath(locator))), 15000);
+        const button = await this.driver.wait(until.elementIsEnabled(this.driver.findElement(By.xpath(locator))), 15000);
+        await button.click();
+        
+        await new Promise(resolve => setTimeout(resolve, 12000));
+    }
+    
+    async clickOnColorFilter() {
+        const locator = '/html/body/div[1]/div[1]/main/div[2]/div[1]/div[2]/div[1]/div/div/div[1]/div[5]/div[7]/div';
+        await this.driver.wait(until.elementIsEnabled(this.driver.findElement(By.xpath(locator))), 5000).click();
+    }
+    
+    async selectColorOption(color) {
+        const colorSelectLocator = '//*[@data-test-id="multi-select-dropdown-card-opener" and ./span[contains(text(), "Colour")]]';
+        const colorValueLocator = `//li/a[contains(text(), "${color}")]`;
+        
+        const x = await this.driver.wait(until.elementIsEnabled(this.driver.findElement(By.xpath(colorSelectLocator))), 15000);
+        await x.click();
+        await this.driver.findElement(By.xpath(colorValueLocator)).click();
+    }
+    
+    async closeFilterModal() {
+        const locator = '//div[@class="sidebar"]//*[@class="close-button show"]';
+        
+        await new Promise(resolve => setTimeout(resolve, 5000))
+
+        await this.driver.wait(until.elementIsVisible(this.driver.findElement(By.xpath(locator))), 5000);
+        const close = await this.driver.wait(until.elementIsEnabled(this.driver.findElement(By.xpath(locator))), 5000);
+        await close.click();
+    }
+    
+    async selectFilterOption(value) {
+        const locator = '/html/body/div/div[1]/main/div[2]/div[1]/div[2]/div[2]/div[2]/wb-select-control/wb-select/select';
+        
+        const selectElement = await this.driver.findElement(By.xpath(locator));
+        const select = new Select(selectElement);
+    
+        await select.selectByValue(value);
+    }
+    
+    async clickOnFirstResult(value) {
+        const locator = '//*[@class="dcp-cars-srp-results__tile"]';
+        
+        await new Promise(resolve => setTimeout(resolve, 5000));
+
+        const result = await this.driver.wait(until.elementIsEnabled(this.driver.findElement(By.xpath(locator))), 5000);
+        await result.click();
+    }
+    
+    async clickOnEnquireNow() {
+        const locator = '[data-test-id="dcp-buy-box__contact-seller"]';
+        await this.driver.findElement(By.css(locator)).click();
+    }
+
+    async insertFirstName(firstName) {
+        const locator = '//div[@data-test-id="rfq-contact__first-name"]//input[@type="text"]';
+        
+        await new Promise(resolve => setTimeout(resolve, 5000));
+    
+        const input = await this.driver.wait(until.elementIsEnabled(this.driver.findElement(By.xpath(locator))), 5000);
+        await input.sendKeys(firstName);
+    }
+    
+    async insertLastName(lastName) {
+        const locator = '//div[@data-test-id="rfq-contact__last-name"]//input';
+    
+        const input = await this.driver.wait(until.elementIsEnabled(this.driver.findElement(By.xpath(locator))), 5000);
+        await input.sendKeys(lastName);
+    }
+    
+    async insertEmail(email) {
+        const locator = '//div[@data-test-id="rfq-contact__email"]//input';
+    
+        const input = await this.driver.wait(until.elementIsEnabled(this.driver.findElement(By.xpath(locator))), 5000);
+        await input.sendKeys(email);
+    }
+    
+    async insertPhoneNumber(phoneNumber) {
+        const locator = '//div[@data-test-id="rfq-contact__phone"]//input';
+    
+        const input = await this.driver.wait(until.elementIsEnabled(this.driver.findElement(By.xpath(locator))), 5000);
+        await input.sendKeys(phoneNumber);
+    }
+    
+    async insertPostalCode(postalCode) {
+        const locator = '//div[@data-test-id="rfq-contact__postal-code"]//input';
+        
+        const input = await this.driver.wait(until.elementIsEnabled(this.driver.findElement(By.xpath(locator))), 5000);
+        await input.sendKeys(postalCode);
+    }
+    
+    async clickOnProceedButton() {
+        const locator = '[data-test-id="dcp-rfq-contact-button-container__button-next"';
+        await this.driver.findElement(By.css(locator)).click();
+    }
 }
-
-async function insertLastName(driver, lastName) {
-    const locator = '//div[@data-test-id="rfq-contact__last-name"]//input';
-    await driver.findElement(By.xpath(locator)).sendKeys(lastName);
-}
-
-async function insertEmail(driver, email) {
-    const locator = '//div[@data-test-id="rfq-contact__email"]//input';
-    await driver.findElement(By.xpath(locator)).sendKeys(email);
-}
-
-async function insertPhoneNumber(driver, phoneNumber) {
-    const locator = '//div[@data-test-id="rfq-contact__phone"]//input';
-    await driver.findElement(By.xpath(locator)).sendKeys(phoneNumber);
-}
-
-async function insertPostalCode(driver, postalCode) {
-    const locator = '//div[@data-test-id="rfq-contact__postal-code"]//input';
-    await driver.findElement(By.xpath(locator)).sendKeys(postalCode);
-}
-
-async function clickOnProceedButton(driver) {
-    const locator = '[data-test-id="dcp-rfq-contact-button-container__button-next"';
-    await driver.findElement(By.css(locator)).click();
-}
-
-
 
 module.exports = {
-    pressAcceptAllCookiesButton,
-    selectStateOption,
-    insertLocationPostalCode,
-    pressPrivateRadioButton,
-    pressModalCloseButton,
-    pressFilterButton,
-    clickPreOwnTab,
-    clickOnColorFilter,
-    selectColorOption,
-    closeFilterModal,
-    selectFilterOption,
-    clickOnFirstResult,
-    clickOnEnquireNow,
-    insertFirstName,
-    insertLastName,
-    insertEmail,
-    insertPhoneNumber,
-    insertPostalCode,
-    clickOnProceedButton
+    Navigators
 };

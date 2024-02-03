@@ -9,8 +9,8 @@ class Navigators {
         const shadowLocator = '//*[@settings-id="Kvbnw4-6_"]';
         const buttonLocator = '[data-test="handle-accept-all-button"]';
     
-        await new Promise(resolve => setTimeout(resolve, 5000));
-        
+       await this.driver.wait(until.elementIsNotVisible(this.driver.findElement(By.xpath("//div[@class='dcp-loading-spinner']"))));
+       
         const cookieBanner = await this.driver.wait(until.elementLocated(By.xpath(shadowLocator)), 10000);
         const shadowRoot = await cookieBanner.getShadowRoot();
         
@@ -55,34 +55,36 @@ class Navigators {
     async clickPreOwnTab() {
         const locator = '//button[./span[contains(text(), "Pre-Owned")]]';
         
-        await this.driver.wait(until.elementIsVisible(this.driver.findElement(By.xpath(locator))), 15000);
+        await this.driver.wait(until.elementLocated(By.xpath(locator)), 15000);
         const button = await this.driver.wait(until.elementIsEnabled(this.driver.findElement(By.xpath(locator))), 15000);
         await button.click();
         
-        await new Promise(resolve => setTimeout(resolve, 12000));
+        await this.driver.wait(until.elementLocated(By.xpath("//div[@class='dcp-loading-spinner']"), 15000));
+        await this.driver.wait(until.elementIsNotVisible(this.driver.findElement(By.xpath("//div[@class='dcp-loading-spinner']")), 15000));
     }
     
     async clickOnColorFilter() {
-        const locator = '/html/body/div[1]/div[1]/main/div[2]/div[1]/div[2]/div[1]/div/div/div[1]/div[5]/div[7]/div';
-        await this.driver.wait(until.elementIsEnabled(this.driver.findElement(By.xpath(locator))), 5000).click();
+        const locator = '//div[@class = "category-filter-row" and .//*[text() = "Colour"]]';
+        await this.driver.wait(until.elementLocated(By.xpath(locator)), 5000).click();
     }
     
     async selectColorOption(color) {
         const colorSelectLocator = '//*[@data-test-id="multi-select-dropdown-card-opener" and ./span[contains(text(), "Colour")]]';
         const colorValueLocator = `//li/a[contains(text(), "${color}")]`;
         
-        const x = await this.driver.wait(until.elementIsEnabled(this.driver.findElement(By.xpath(colorSelectLocator))), 15000);
+        const x = await this.driver.wait(until.elementLocated(By.xpath(colorSelectLocator)), 15000);
         await x.click();
-        await this.driver.findElement(By.xpath(colorValueLocator)).click();
+        
+        const colorOption = await this.driver.wait(until.elementIsVisible(this.driver.findElement(By.xpath(colorValueLocator))), 5000);
+        await colorOption.click();
     }
     
     async closeFilterModal() {
         const locator = '//div[@class="sidebar"]//*[@class="close-button show"]';
         
-        await new Promise(resolve => setTimeout(resolve, 5000))
+        await this.driver.wait(until.elementIsNotVisible(this.driver.findElement(By.xpath("//div[@class='dcp-loading-spinner']"))));
 
-        await this.driver.wait(until.elementIsVisible(this.driver.findElement(By.xpath(locator))), 5000);
-        const close = await this.driver.wait(until.elementIsEnabled(this.driver.findElement(By.xpath(locator))), 5000);
+        const close = await this.driver.wait(until.elementLocated(By.xpath(locator)), 5000);
         await close.click();
     }
     
@@ -93,14 +95,14 @@ class Navigators {
         const select = new Select(selectElement);
     
         await select.selectByValue(value);
+
+        await this.driver.wait(until.elementIsNotVisible(this.driver.findElement(By.xpath("//div[@class='dcp-loading-spinner']"))));
     }
     
     async clickOnFirstResult(value) {
-        const locator = '//*[@class="dcp-cars-srp-results__tile"]';
-        
-        await new Promise(resolve => setTimeout(resolve, 5000));
+        const locator = '//div[contains(@class, "dcp-cars-srp-results")]/div[@class="dcp-cars-srp-results__tile"][1]';
 
-        const result = await this.driver.wait(until.elementIsEnabled(this.driver.findElement(By.xpath(locator))), 5000);
+        let result = await this.driver.wait(until.elementLocated(By.xpath(locator)), 5000);
         await result.click();
     }
     
@@ -112,7 +114,7 @@ class Navigators {
     async insertFirstName(firstName) {
         const locator = '//div[@data-test-id="rfq-contact__first-name"]//input[@type="text"]';
         
-        await new Promise(resolve => setTimeout(resolve, 5000));
+        await this.driver.wait(until.elementIsNotVisible(this.driver.findElement(By.xpath("//div[@class='dcp-loading-spinner']"))));
     
         const input = await this.driver.wait(until.elementIsEnabled(this.driver.findElement(By.xpath(locator))), 5000);
         await input.sendKeys(firstName);

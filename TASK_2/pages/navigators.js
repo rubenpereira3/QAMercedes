@@ -43,20 +43,34 @@ class Navigators {
     
         const button = await this.driver.wait(until.elementIsEnabled(this.driver.findElement(By.xpath(locator))), 10000);
         await button.click();
+        
+        await this.driver.wait(until.elementLocated(By.xpath("//div[@data-test-id='modal-popup__location']//div[@class='wb-modal-dialog__backdrop']")), 15000);
+        await this.driver.wait(until.elementIsNotVisible(this.driver.findElement(By.xpath("//div[@data-test-id='modal-popup__location']//div[@class='wb-modal-dialog__backdrop']"))), 15000);
     }
     
     async pressFilterButton() {
-        const locator = '//div/*[@class="filter-toggle"]';
-        
-        const button = await this.driver.wait(until.elementIsEnabled(this.driver.findElement(By.xpath(locator))), 12000);
-        await button.click();
+        const locator = '//*[@class="filter-toggle"]';
+        const filterScreenLocator = '//div[@class="wrapper show"]//h3[contains(@data-test-id, "row-headline")]';
+
+        try {
+            await this.driver.wait(until.elementLocated(By.xpath(locator)), 15000);
+            const button = await this.driver.wait(until.elementIsEnabled(this.driver.findElement(By.xpath(locator))), 12000);
+            await button.click();
+
+            await this.driver.wait(until.elementLocated(By.xpath(filterScreenLocator)), 10000);
+        } catch(e) {
+            await this.driver.wait(until.elementLocated(By.xpath(locator)), 15000);
+            const button = await this.driver.wait(until.elementIsEnabled(this.driver.findElement(By.xpath(locator))), 12000);
+            await button.click();
+
+            await this.driver.wait(until.elementLocated(By.xpath(filterScreenLocator)), 10000);
+        } 
     }
     
     async clickPreOwnTab() {
         const locator = '//button[./span[contains(text(), "Pre-Owned")]]';
         
-        await this.driver.wait(until.elementLocated(By.xpath(locator)), 15000);
-        const button = await this.driver.wait(until.elementIsEnabled(this.driver.findElement(By.xpath(locator))), 15000);
+        const button = await this.driver.wait(until.elementIsVisible(this.driver.findElement(By.xpath(locator))), 15000);
         await button.click();
         
         await this.driver.wait(until.elementLocated(By.xpath("//div[@class='dcp-loading-spinner']"), 15000));
@@ -65,7 +79,10 @@ class Navigators {
     
     async clickOnColorFilter() {
         const locator = '//div[@class = "category-filter-row" and .//*[text() = "Colour"]]';
-        await this.driver.wait(until.elementLocated(By.xpath(locator)), 5000).click();
+    
+        await this.driver.wait(until.elementLocated(By.xpath(locator)), 5000);
+        const colorFilter = await this.driver.wait(until.elementIsVisible(this.driver.findElement(By.xpath(locator))), 5000);
+        await colorFilter.click();
     }
     
     async selectColorOption(color) {
@@ -89,12 +106,18 @@ class Navigators {
     }
     
     async selectFilterOption(value) {
-        const locator = '/html/body/div/div[1]/main/div[2]/div[1]/div[2]/div[2]/div[2]/wb-select-control/wb-select/select';
-        
-        const selectElement = await this.driver.findElement(By.xpath(locator));
+        const locator = '//div[@id="srp-result"]//select';
+        const selectOptionLocator = `${locator}/option[@value = "${value}"]`;
+
+        const select = await this.driver.wait(until.elementLocated(By.xpath(locator)), 5000);
+        await select.click();
+
+        const option = await this.driver.wait(until.elementLocated(By.xpath(selectOptionLocator)), 5000);
+        await option.click();
+        /*const selectElement = await this.driver.findElement(By.xpath(locator));
         const select = new Select(selectElement);
     
-        await select.selectByValue(value);
+        await select.selectByValue(value);*/
 
         await this.driver.wait(until.elementIsNotVisible(this.driver.findElement(By.xpath("//div[@class='dcp-loading-spinner']"))));
     }

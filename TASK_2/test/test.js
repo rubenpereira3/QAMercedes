@@ -1,6 +1,8 @@
 const { Builder, Browser } = require("selenium-webdriver");
-const { Navigators } = require("../pages/navigators");
-const { ScreenChecks } = require("../pages/screenChecks");
+const { CookiePopUp } = require("../pages/common/cookiePopUp");
+const { LocationModal } = require("../pages/common/locationModal");
+const { Showroom } = require("../pages/showroom");
+const { DetailPage } = require("../pages/detailPage"); 
 const chai = require("chai");
 const fileOperations = require("../fileOperations");
 const { step } = require("mocha-steps");
@@ -10,8 +12,10 @@ describe('Validate the negative path of enquiring the highest price at Mercedes-
     this.timeout(timeoutInMinutes * 60000);
     
     let driver;
-    let navigators;
-    let screenChecks;
+    let cookiePopUp;
+    let locationModal;
+    let showroom;
+    let detailPage;
 
     before(async function() {
         const useEdge = process.argv.includes('--edge');
@@ -20,66 +24,68 @@ describe('Validate the negative path of enquiring the highest price at Mercedes-
         driver = await new Builder().forBrowser(browser).build();
         await driver.manage().window().setRect({ width: 1024, height: 900 });
 
-        navigators = new Navigators(driver);
-        screenChecks = new ScreenChecks(driver);
+        cookiePopUp = new CookiePopUp(driver)
+        locationModal = new LocationModal(driver);
+        showroom = new Showroom(driver);
+        detailPage = new DetailPage(driver);
     });
     
     step('Open the Mercedes-Benz shop', async function() {
        await driver.get('https://shop.mercedes-benz.com/en-au/shop/vehicle/srp/demo');
-       await screenChecks.checkPageTitle('Search Overview');
+       await cookiePopUp.checkPageTitle('Search Overview');
 
-       await navigators.pressAcceptAllCookiesButton();
+       await cookiePopUp.pressAcceptAllButton();
    });
    
     step('Fill location info', async function() {
-        await navigators.selectStateOption('New South Wales');
-        await navigators.insertLocationPostalCode('2007');
-        await navigators.pressPrivateRadioButton();
-        await navigators.pressModalCloseButton();
+        await locationModal.selectStateOption('New South Wales');
+        await locationModal.insertLocationPostalCode('2007');
+        await locationModal.pressPrivateRadioButton();
+        await locationModal.pressCloseButton();
     });
 
     step('Click the filter button', async function() {
-        await navigators.pressFilterButton();
+        await showroom.pressFilterButton();
     });
 
     step('Select a color from Pre-Owned tab', async function() {
-        await navigators.clickPreOwnTab();
+        await showroom.clickPreOwnTab();
         
-        await navigators.pressFilterButton();
+        await showroom.pressFilterButton();
         
-        await navigators.clickOnColorFilter();
-        await navigators.selectColorOption("Graphite Grey metallic");
+        await showroom.clickOnColorFilter();
+        await showroom.selectColorOption("Graphite Grey metallic");
         
-        await navigators.closeFilterModal();
+        await showroom.closeFilterModal();
     });
     
     step('Navigate to the Vehicle Details of the most expensive car', async function() {
-        await navigators.selectFilterOption('price-desc-ucos');
-        await navigators.clickOnFirstResult();
+        await showroom.selectFilterOption('price-desc-ucos');
+        await showroom.clickOnFirstResult();
     });
 
     step('Save car details to a file', async function() {
-        const modelYear = await screenChecks.getModelYear();
-        const vin = await screenChecks.getVin();
+        const modelYear = await detailPage.getModelYear();
+        const vin = await detailPage.getVin();
 
         fileOperations.saveToFile(`Model Year: ${modelYear}\nVIN: ${vin}`);
     });
     
     step('Click on Enquire Now button', async function() {
-        await navigators.clickOnEnquireNow();
+        await detailPage.clickOnEnquireNow();
     });
     
     step('Fill contact details with invalid email', async function() {
-        await navigators.insertFirstName('Vitor');
-        await navigators.insertLastName('Antunes');
-        await navigators.insertEmail('abc');
-        await navigators.insertPhoneNumber('0441234567');
-        await navigators.insertPostalCode("2007");
+        await detailPage.insertFirstName('Vitor');
+        await detailPage.insertLastName('Antunes');
+        await detailPage.insertEmail('abc');
+        await detailPage.insertPhoneNumber('0441234567');
+        await detailPage.insertPostalCode("2007");
     });
     
     step('Click Proceed and validate the error', async function() {
-        await navigators.clickOnProceedButton();
-        const error = await screenChecks.getErrorMessage();
+        await detailPage.clickOnProceedButton();
+        const error = await detailPage.getErrorMessage();
 
         chai.assert.equal(error, 'An error has occurred.\nPlease check the following sections:');
     });

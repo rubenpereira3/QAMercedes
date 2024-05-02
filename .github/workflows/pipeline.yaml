@@ -12,7 +12,8 @@ jobs:
         uses: actions/setup-node@v2
         with: 
           node-version: 18.
-      - name: move to directory and test
+      - name: move to directory, run install and test
         run: |
           cd TASK_2
+          npm install
           npm run test

@@ -4,7 +4,7 @@
   "description": "automation framework demo",
   "main": "index.js",
   "scripts": {
-    "test": "mocha --full-trace --async-stack-traces"
+    "test": "CI=false mocha --full-trace --async-stack-traces"
   },
   "author": "Ruben",
   "license": "ISC",

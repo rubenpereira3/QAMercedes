@@ -6,16 +6,18 @@ const { DetailPage } = require("../pages/detailPage");
 const chai = require("chai");
 const fileOperations = require("../fileOperations");
 const { step } = require("mocha-steps");
+const chrome = require('selenium-webdriver/chrome');
+let fs = require('fs');
 
 describe('Validate the negative path of enquiring the highest price at Mercedes-Benz', function () {   
     const timeoutInMinutes = 30;
     this.timeout(timeoutInMinutes * 60000);
     
     let driver;
-    let cookiePopUp;
-    let locationModal;
-    let showroom;
-    let detailPage;
+    let cookiePopUp = new CookiePopUp();
+    let locationModal = new LocationModal();
+    let showroom = new Showroom();
+    let detailPage = new DetailPage();
 
     before(async function() {
         const useEdge = process.argv.includes('--edge');
@@ -24,10 +26,10 @@ describe('Validate the negative path of enquiring the highest price at Mercedes-
         driver = await new Builder().forBrowser(browser).build();
         await driver.manage().window().setRect({ width: 1024, height: 900 });
 
-        cookiePopUp = new CookiePopUp(driver)
-        locationModal = new LocationModal(driver);
-        showroom = new Showroom(driver);
-        detailPage = new DetailPage(driver);
+        cookiePopUp.driver = driver;
+        locationModal.driver = driver;
+        showroom.driver = driver;
+        detailPage.driver = driver;
     });
     
     step('Open the Mercedes-Benz shop', async function() {

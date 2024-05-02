@@ -4,7 +4,7 @@ class CookiePopUp {
     constructor(driver) {
         this.driver = driver;
     }
-
+    
     async pressAcceptAllButton() {
         const shadowLocator = '//*[@settings-id="Kvbnw4-6_"]';
         const buttonLocator = '[data-test="handle-accept-all-button"]';

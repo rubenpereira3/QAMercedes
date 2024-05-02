@@ -7,7 +7,7 @@ class Showroom {
 
     async pressFilterButton() {
         const locator = '//*[@class="filter-toggle"]';
-        const filterScreenLocator = '//div[@class="wrapper show"]//h3[contains(@data-test-id, "row-headline")]';
+        const filterScreenLocator = '//h3[contains(@data-test-id, "row-headline") and string-length(normalize-space(text())) > 0]';
 
         try {
             await this.driver.wait(until.elementLocated(By.xpath(locator)), 15000);
@@ -25,7 +25,7 @@ class Showroom {
     }
     
     async clickPreOwnTab() {
-        const locator = '//button[./span[contains(text(), "Pre-Owned")]]';
+        const locator = '//wb-tab[./button/span[contains(text(), "Pre-Owned")]]';
         
         const button = await this.driver.wait(until.elementIsVisible(this.driver.findElement(By.xpath(locator))), 15000);
         await button.click();
@@ -58,7 +58,7 @@ class Showroom {
         
         await this.driver.wait(until.elementIsNotVisible(this.driver.findElement(By.xpath("//div[@class='dcp-loading-spinner']"))));
 
-        const close = await this.driver.wait(until.elementLocated(By.xpath(locator)), 5000);
+        const close = await this.driver.wait(until.elementLocated(By.xpath(locator)), 15000);
         await close.click();
     }
     

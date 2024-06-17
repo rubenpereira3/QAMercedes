@@ -1,98 +1,69 @@
-const { Builder, Browser } = require("selenium-webdriver");
-const { CookiePopUp } = require("../pages/common/cookiePopUp");
-const { LocationModal } = require("../pages/common/locationModal");
-const { Showroom } = require("../pages/showroom");
-const { DetailPage } = require("../pages/detailPage"); 
-const chai = require("chai");
-const fileOperations = require("../fileOperations");
-const { step } = require("mocha-steps");
-const chrome = require('selenium-webdriver/chrome');
-let fs = require('fs');
+const { step } = require("mocha-steps")
+const { ShowroomPage } = require("../pages/ShowroomPage")
+const { DetailPage } = require("../pages/DetailPage")
+const { Browser, Builder } = require("selenium-webdriver")
 
-describe('Validate the negative path of enquiring the highest price at Mercedes-Benz', function () {   
-    const timeoutInMinutes = 30;
-    this.timeout(timeoutInMinutes * 60000);
+const TestData = require("../pages/fixtures/TestData")
+
+describe('Validate the negative path of enquiring the highest price at Mercedes-Benz', function() {   
+    const timeoutInMinutes = 30
+    this.timeout(timeoutInMinutes * 60000)
     
-    let driver;
-    let cookiePopUp = new CookiePopUp();
-    let locationModal = new LocationModal();
-    let showroom = new Showroom();
-    let detailPage = new DetailPage();
+    let showroomPage
+    let detailPage
+    let driver
 
     before(async function() {
-        const useEdge = process.argv.includes('--edge');
-        const browser = useEdge ? Browser.EDGE : Browser.CHROME;
+        const useEdge = process.argv.includes('--edge')
+        const browser = useEdge ? Browser.EDGE : Browser.CHROME
 
-        driver = await new Builder().forBrowser(browser).build();
-        await driver.manage().window().setRect({ width: 1024, height: 900 });
+        driver = await new Builder().forBrowser(browser).build()
+  
+        showroomPage = new ShowroomPage(driver)
+        detailPage = new DetailPage(driver)
+        
+        await driver.manage().setTimeouts({ implicit: 30000 })
+        await driver.manage().window().setRect({ x: 0, y: 0, width: 1920, height: 1080 })
+    })
 
-        cookiePopUp.driver = driver;
-        locationModal.driver = driver;
-        showroom.driver = driver;
-        detailPage.driver = driver;
-    });
     
     step('Open the Mercedes-Benz shop', async function() {
-       await driver.get('https://shop.mercedes-benz.com/en-au/shop/vehicle/srp/demo');
-       await cookiePopUp.checkPageTitle('Search Overview');
-
-       await cookiePopUp.pressAcceptAllButton();
-   });
+       await showroomPage.visit()
+       await showroomPage.cookies.acceptCookies()
+    })
    
     step('Fill location info', async function() {
-        await locationModal.selectStateOption('New South Wales');
-        await locationModal.insertLocationPostalCode('2007');
-        await locationModal.pressPrivateRadioButton();
-        await locationModal.pressCloseButton();
-    });
+        await showroomPage.locationModal.fill(TestData.location)
+    })
 
     step('Click the filter button', async function() {
-        await showroom.pressFilterButton();
-    });
+        await showroomPage.openFilterMenu()
+    })
 
     step('Select a color from Pre-Owned tab', async function() {
-        await showroom.clickPreOwnTab();
+        await showroomPage.filter.clickPreOwnTab()
+                
+        await showroomPage.filter.clickColourCategory()
+        await showroomPage.filter.selectColourOption(TestData.color)
         
-        await showroom.pressFilterButton();
-        
-        await showroom.clickOnColorFilter();
-        await showroom.selectColorOption("Graphite Grey metallic");
-        
-        await showroom.closeFilterModal();
-    });
+        await showroomPage.filter.close()
+    })
     
     step('Navigate to the Vehicle Details of the most expensive car', async function() {
-        await showroom.selectFilterOption('price-desc-ucos');
-        await showroom.clickOnFirstResult();
-    });
+        await showroomPage.sort(TestData.sortOption)
+        await showroomPage.clickCardByPosition(1)
+    })
 
-    step('Save car details to a file', async function() {
-        const modelYear = await detailPage.getModelYear();
-        const vin = await detailPage.getVin();
-
-        fileOperations.saveToFile(`Model Year: ${modelYear}\nVIN: ${vin}`);
-    });
-    
     step('Click on Enquire Now button', async function() {
-        await detailPage.clickOnEnquireNow();
-    });
+        await detailPage.clickEnquireNowButton()
+    })
     
     step('Fill contact details with invalid email', async function() {
-        await detailPage.insertFirstName('Vitor');
-        await detailPage.insertLastName('Antunes');
-        await detailPage.insertEmail('abc');
-        await detailPage.insertPhoneNumber('0441234567');
-        await detailPage.insertPostalCode("2007");
-    });
+        await detailPage.form.fill(TestData.contactData)
+        await detailPage.form.verifyErrorMessage(TestData.formMessage)
+    })
     
-    step('Click Proceed and validate the error', async function() {
-        await detailPage.clickOnProceedButton();
-        const error = await detailPage.getErrorMessage();
-
-        chai.assert.equal(error, 'An error has occurred.\nPlease check the following sections:');
-    });
-
     after(async function() {
-        await driver.quit();
-    });
-});
+        await driver.quit()
+    })
+})

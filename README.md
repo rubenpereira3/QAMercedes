@@ -7,7 +7,6 @@
 
 ## Installation
 ```
-cd TASK_2
 npm install
 ```
 
